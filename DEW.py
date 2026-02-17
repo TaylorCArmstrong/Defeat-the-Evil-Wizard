@@ -35,8 +35,14 @@ class EvilWizard(Character):
         print(f"{self.name} regenerates 5 health! Current health: {self.health}")
 
 # Create Archer class
+class Archer(Character):
+    def __init__(self, name):
+        super().__init__(name, health=120, attack_power=30)
 
 # Create Paladin class 
+class Paladin(Character):
+    def __init__(self, name):
+        super().__init__(name, health=200, attack_power=15)
 
 
 
