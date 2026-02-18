@@ -12,6 +12,12 @@ class Character:
         if opponent.health <= 0:
             print(f"{opponent.name} has been defeated!")
 
+    def special(self, opponent, special_choice=None):
+        print(f"{self.name} doesn't have a special ability.")
+
+    def special_options(self):
+        return []
+
     def display_stats(self):
         print(f"{self.name}'s Stats - Health: {self.health}/{self.max_health}, Attack Power: {self.attack_power}")
 
@@ -20,10 +26,50 @@ class Warrior(Character):
     def __init__(self, name):
         super().__init__(name, health=140, attack_power=25)
 
+    def special_options(self):
+        return ["Power Strike", "Battle Cry"]
+
+    def special(self, opponent, special_choice):
+        if special_choice == '1':
+            damage = 45
+            opponent.health -= damage
+            print(f"{self.name} uses Power Strike for {damage} damage!")
+        elif special_choice == '2':
+            damage = 30
+            self.health = min(self.max_health, self.health + 20)
+            opponent.health -= damage
+            print(f"{self.name} uses Battle Cry for {damage} damage and restores 20 health!")
+        else:
+            print("Invalid special ability choice.")
+            return
+
+        if opponent.health <= 0:
+            print(f"{opponent.name} has been defeated!")
+
 # Mage class (inherits from Character)
 class Mage(Character):
     def __init__(self, name):
         super().__init__(name, health=100, attack_power=35)
+
+    def special_options(self):
+        return ["Fireball", "Arcane Shield"]
+
+    def special(self, opponent, special_choice):
+        if special_choice == '1':
+            damage = 60
+            opponent.health -= damage
+            print(f"{self.name} casts Fireball for {damage} damage!")
+        elif special_choice == '2':
+            damage = 25
+            self.health = min(self.max_health, self.health + 25)
+            opponent.health -= damage
+            print(f"{self.name} casts Arcane Shield for {damage} damage and restores 25 health!")
+        else:
+            print("Invalid special ability choice.")
+            return
+
+        if opponent.health <= 0:
+            print(f"{opponent.name} has been defeated!")
 
 # EvilWizard class (inherits from Character)
 class EvilWizard(Character):
@@ -39,10 +85,52 @@ class Archer(Character):
     def __init__(self, name):
         super().__init__(name, health=120, attack_power=30)
 
+    def special_options(self):
+        return ["Piercing Arrow", "Volley"]
+
+    def special(self, opponent, special_choice):
+        if special_choice == '1':
+            damage = 40
+            opponent.health -= damage
+            print(f"{self.name} uses Piercing Arrow for {damage} damage!")
+        elif special_choice == '2':
+            damage = 50
+            opponent.health -= damage
+            print(f"{self.name} uses Volley for {damage} damage!")
+        else:
+            print("Invalid special ability choice.")
+            return
+
+        if opponent.health <= 0:
+            print(f"{opponent.name} has been defeated!")
+
 # Create Paladin class 
 class Paladin(Character):
     def __init__(self, name):
         super().__init__(name, health=200, attack_power=15)
+
+    def special_options(self):
+        return ["Holy Smite", "Divine Blessing"]
+
+    def special(self, opponent, special_choice):
+        if special_choice == '1':
+            damage = 35
+            heal_amount = 15
+            opponent.health -= damage
+            self.health = min(self.max_health, self.health + heal_amount)
+            print(f"{self.name} uses Holy Smite for {damage} damage and heals {heal_amount} health!")
+        elif special_choice == '2':
+            damage = 20
+            heal_amount = 35
+            opponent.health -= damage
+            self.health = min(self.max_health, self.health + heal_amount)
+            print(f"{self.name} uses Divine Blessing for {damage} damage and heals {heal_amount} health!")
+        else:
+            print("Invalid special ability choice.")
+            return
+
+        if opponent.health <= 0:
+            print(f"{opponent.name} has been defeated!")
 
 
 
@@ -81,7 +169,15 @@ def battle(player, wizard):
         if choice == '1':
             player.attack(wizard)
         elif choice == '2':
-            pass  # Implement special abilities
+            specials = player.special_options()
+            if specials:
+                print("Choose a special ability:")
+                for idx, special_name in enumerate(specials, start=1):
+                    print(f"{idx}. {special_name}")
+                special_choice = input("Enter special ability number: ")
+                player.special(wizard, special_choice)
+            else:
+                player.special(wizard)
         elif choice == '3':
             pass  # Implement heal method
         elif choice == '4':
