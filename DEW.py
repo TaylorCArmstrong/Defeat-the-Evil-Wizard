@@ -4,11 +4,19 @@ class Character:
         self.name = name
         self.health = health
         self.attack_power = attack_power
-        self.max_health = health  
+        self.max_health = health
+        self.shield = 0
 
     def attack(self, opponent):
-        opponent.health -= self.attack_power
-        print(f"{self.name} attacks {opponent.name} for {self.attack_power} damage!")
+        damage = self.attack_power
+        absorbed = min(opponent.shield, damage)
+        if absorbed > 0:
+            opponent.shield -= absorbed
+            damage -= absorbed
+            print(f"{opponent.name}'s shield absorbs {absorbed} damage!")
+
+        opponent.health -= damage
+        print(f"{self.name} attacks {opponent.name} for {damage} damage!")
         if opponent.health <= 0:
             print(f"{opponent.name} has been defeated!")
 
@@ -17,6 +25,15 @@ class Character:
 
     def special_options(self):
         return []
+
+    def heal(self, amount=30):
+        if self.health >= self.max_health:
+            print(f"{self.name} is already at full health!")
+            return
+
+        healed = min(amount, self.max_health - self.health)
+        self.health += healed
+        print(f"{self.name} heals for {healed} health! Current health: {self.health}/{self.max_health}")
 
     def display_stats(self):
         print(f"{self.name}'s Stats - Health: {self.health}/{self.max_health}, Attack Power: {self.attack_power}")
@@ -86,7 +103,7 @@ class Archer(Character):
         super().__init__(name, health=120, attack_power=30)
 
     def special_options(self):
-        return ["Piercing Arrow", "Volley"]
+        return ["Piercing Arrow", "Evade"]
 
     def special(self, opponent, special_choice):
         if special_choice == '1':
@@ -94,9 +111,7 @@ class Archer(Character):
             opponent.health -= damage
             print(f"{self.name} uses Piercing Arrow for {damage} damage!")
         elif special_choice == '2':
-            damage = 50
-            opponent.health -= damage
-            print(f"{self.name} uses Volley for {damage} damage!")
+            print(f"{self.name} uses Evade and does no damage!")
         else:
             print("Invalid special ability choice.")
             return
@@ -110,7 +125,7 @@ class Paladin(Character):
         super().__init__(name, health=200, attack_power=15)
 
     def special_options(self):
-        return ["Holy Smite", "Divine Blessing"]
+        return ["Holy Smite", "Shield Bash"]
 
     def special(self, opponent, special_choice):
         if special_choice == '1':
@@ -121,10 +136,10 @@ class Paladin(Character):
             print(f"{self.name} uses Holy Smite for {damage} damage and heals {heal_amount} health!")
         elif special_choice == '2':
             damage = 20
-            heal_amount = 35
+            shield_amount = 35
             opponent.health -= damage
-            self.health = min(self.max_health, self.health + heal_amount)
-            print(f"{self.name} uses Divine Blessing for {damage} damage and heals {heal_amount} health!")
+            self.shield += shield_amount
+            print(f"{self.name} uses Shield Bash for {damage} damage and gains {shield_amount} shield!")
         else:
             print("Invalid special ability choice.")
             return
@@ -179,7 +194,7 @@ def battle(player, wizard):
             else:
                 player.special(wizard)
         elif choice == '3':
-            pass  # Implement heal method
+            player.heal()
         elif choice == '4':
             player.display_stats()
         else:
