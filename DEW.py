@@ -1,3 +1,5 @@
+import random
+
 # Base Character class
 class Character:
     def __init__(self, name, health, attack_power):
@@ -8,7 +10,9 @@ class Character:
         self.shield = 0
 
     def attack(self, opponent):
-        damage = self.attack_power
+        min_damage = max(1, self.attack_power - 5)
+        max_damage = self.attack_power + 5
+        damage = random.randint(min_damage, max_damage)
         absorbed = min(opponent.shield, damage)
         if absorbed > 0:
             opponent.shield -= absorbed
